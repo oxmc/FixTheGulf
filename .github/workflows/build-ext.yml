@@ -1,0 +1,41 @@
+name: Build Browser Extensions
+
+on:
+  push:
+    branches:
+      - main  # Runs on push to the main branch
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Chrome Extension ZIP
+        run: |
+          mkdir chrome-build
+          cp manifest-chrome.json gulf.js icon.png chrome-build/
+          cd chrome-build
+          zip -r ../chrome-extension.zip .
+      
+      - name: Create Firefox Extension XPI
+        run: |
+          mkdir firefox-build
+          cp manifest-firefox.json gulf.js icon.png firefox-build/
+          cd firefox-build
+          zip -r ../firefox-extension.xpi .
+
+      - name: Upload Chrome Extension Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: chrome-extension.zip
+
+      - name: Upload Firefox Extension Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension
+          path: firefox-extension.xpi
